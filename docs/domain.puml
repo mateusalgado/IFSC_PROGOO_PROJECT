@@ -56,10 +56,7 @@ package "Configuração" {
     class Modo {
         tipo: {Normal, Científico}
         segundaFunçãoAtiva: Boolean
-    }
-
-    class ÂnguloUnidade {
-        unidade: {Radianos, Graus}
+        unidadeÂngulo: {Radianos, Graus}
     }
 
     class Memória {
@@ -73,15 +70,11 @@ class Calculadora {
 Calculadora "1" *-- "1" Display : possui
 Calculadora "1" *-- "1" Memória : possui
 Calculadora "1" *-- "1" Modo : opera em
-Calculadora "1" *-- "many" Botão : possui
-Calculadora "1" -- "many" Operação : executa
-
-Modo "1" *-- "0..1" ÂnguloUnidade : define
+Calculadora "1" *-- "*" Botão : possui
+Calculadora "1" -- "*" Operação : executa
 
 Operação "1" -- "0..1" Resultado : produz
-Display "1" -- "0..1" Resultado : apresenta
-Botão "1" ..> "1" Operação : dispara
-OperaçãoUnária ..> ÂnguloUnidade : consulta (trigonométrica)
+Display "1" -- "0..1" Resultado : mostra
 
 note right of Calculadora
   Entidade central do domínio.
@@ -91,12 +84,8 @@ note right of Calculadora
 end note
 
 note bottom of Modo
-  segundaFunçãoAtiva corresponde
-  ao toggle 2nd (RF14)
-end note
-
-note bottom of ÂnguloUnidade
-  Definido pelo Modo quando
+  segundaFunçãoAtiva → toggle 2nd (RF14)
+  unidadeÂngulo aplicável quando
   tipo = Científico (RF13)
 end note
 

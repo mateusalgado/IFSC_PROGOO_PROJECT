@@ -25,25 +25,30 @@ rectangle "Calculadora iPhone" {
     }
 
     package "Modo Normal" {
-        usecase "Operação binária\n(+, -, ×, ÷)" as UC02
+        usecase "Número → operação\n→ número (+, -, ×, ÷)" as UC02
+        usecase "Operação → número\n(+, -, ×, ÷)" as UC02b
         usecase "Calcular resultado (=)" as UC03
         usecase "Limpar (AC / CE)" as UC04
-        usecase "Inverter sinal (+/-)" as UC05
-        usecase "Porcentagem (%)" as UC06
+        usecase "Número → inverter sinal (+/-)" as UC05
+        usecase "Número → porcentagem (%)" as UC06
         usecase "Memória\n(mc, m+, m-, mr)" as UC07
     }
 
     package "Modo Científico" {
-        usecase "Trigonométrica\n(sin, cos, tan)" as UC08
-        usecase "Hiperbólica\n(sinh, cosh, tanh)" as UC09
-        usecase "Logaritmo\n(ln, log₁₀)" as UC10
-        usecase "Potência\n(x², x³, xʸ, eˣ, 10ˣ)" as UC11
-        usecase "Raiz\n(²√x, ³√x, ʸ√x)" as UC12
-        usecase "Fatorial (x!)" as UC13
-        usecase "Constante (π, e)" as UC14
+        usecase "Número → trigonometria\n(sin, cos, tan)" as UC08
+        usecase "Número → hiperbólica\n(sinh, cosh, tanh)" as UC09
+        usecase "Número → logaritmo\n(ln, log₁₀)" as UC10
+        usecase "Número → potência unária\n(x², x³, eˣ, 10ˣ)" as UC11
+        usecase "Número → xʸ → número" as UC11b
+        usecase "xʸ → número" as UC11c
+        usecase "Número → raiz unária\n(²√x, ³√x)" as UC12
+        usecase "Número → ʸ√x → número" as UC12b
+        usecase "ʸ√x → número" as UC12c
+        usecase "Número → fatorial (x!)" as UC13
+        usecase "Inserir constante (π, e)" as UC14
         usecase "Notação EE" as UC15
         usecase "Rand" as UC16
-        usecase "Inverso (1/x)" as UC17
+        usecase "Número → inverso (1/x)" as UC17
         usecase "Rad/Grau" as UC18
         usecase "Funções 2nd\n(inversas)" as UC19
     }
@@ -52,6 +57,7 @@ rectangle "Calculadora iPhone" {
 user --> UC00
 user --> UC01
 user --> UC02
+user --> UC02b
 user --> UC03
 user --> UC04
 user --> UC05
@@ -61,7 +67,11 @@ user --> UC08
 user --> UC09
 user --> UC10
 user --> UC11
+user --> UC11b
+user --> UC11c
 user --> UC12
+user --> UC12b
+user --> UC12c
 user --> UC13
 user --> UC14
 user --> UC15
@@ -70,18 +80,49 @@ user --> UC17
 user --> UC18
 user --> UC19
 
-UC02 ..> UC01 : <<include>>
-UC03 ..> UC02 : <<include>>
-UC08 ..> UC01 : <<include>>
-UC19 ..> UC08 : <<extend>>
-UC19 ..> UC09 : <<extend>>
-UC19 ..> UC10 : <<extend>>
-UC19 ..> UC11 : <<extend>>
-UC19 ..> UC12 : <<extend>>
+UC02 ..> UC01 : precisa
+UC02 ..> UC03 : precisa
+UC02b ..> UC01 : precisa
+UC02b ..> UC03 : precisa
+
+UC05 ..> UC01 : precisa
+UC06 ..> UC01 : precisa
+
+UC08 ..> UC01 : precisa
+UC09 ..> UC01 : precisa
+UC10 ..> UC01 : precisa
+UC11 ..> UC01 : precisa
+UC11b ..> UC01 : precisa
+UC11b ..> UC03 : precisa
+UC11c ..> UC01 : precisa
+UC11c ..> UC03 : precisa
+UC12 ..> UC01 : precisa
+UC12b ..> UC01 : precisa
+UC12b ..> UC03 : precisa
+UC12c ..> UC01 : precisa
+UC12c ..> UC03 : precisa
+UC13 ..> UC01 : precisa
+UC17 ..> UC01 : precisa
+
+UC19 ..> UC08 : extende
+UC19 ..> UC09 : extende
+UC19 ..> UC10 : extende
+UC19 ..> UC11 : extende
+UC19 ..> UC12 : extende
 
 note right of UC00
   UC08–UC19 exigem
   modo Científico ativo
+end note
+
+note bottom of UC02b
+  Reutiliza o valor exibido
+  no display como 1º operando
+end note
+
+note bottom of UC11c
+  Reutiliza o valor exibido
+  como base (x)
 end note
 
 @enduml

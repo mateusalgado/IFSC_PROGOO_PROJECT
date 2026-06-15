@@ -52,24 +52,32 @@ O diagrama abaixo identifica o único ator do sistema (**Usuário**) e todas as 
 
 ### Descrição dos Casos de Uso Principais
 
-#### UC02 — Realizar Operação Binária
+#### UC02 — Cálculo binário: número → operação → número
 
 | Campo | Descrição |
 |-------|-----------|
 | **Ator** | Usuário |
-| **Pré-condição** | Pelo menos um operando foi inserido |
-| **Fluxo principal** | 1. Usuário insere o primeiro operando (UC01) → 2. Usuário pressiona operador (+, -, ×, ÷) → 3. Usuário insere o segundo operando → 4. Usuário pressiona "=" (UC03) → 5. Sistema exibe o resultado |
-| **Fluxo alternativo** | Se o segundo operando não for inserido, o sistema usa o primeiro operando novamente |
+| **Pré-condição** | Display disponível |
+| **Fluxo principal** | 1. Usuário insere o primeiro operando (UC01) → 2. Pressiona operador (+, -, ×, ÷) → 3. Insere o segundo operando (UC01) → 4. Pressiona "=" (UC03) → 5. Sistema exibe o resultado |
 | **Exceção** | Divisão por zero: sistema exibe "Erro" |
 
-#### UC08 — Aplicar Função Trigonométrica
+#### UC02b — Cálculo binário: operação → número
+
+| Campo | Descrição |
+|-------|-----------|
+| **Ator** | Usuário |
+| **Pré-condição** | Valor exibido no display (resultado anterior ou 0) |
+| **Fluxo principal** | 1. Usuário pressiona operador (+, -, ×, ÷) → 2. Sistema usa o valor do display como 1º operando → 3. Usuário insere o segundo operando (UC01) → 4. Pressiona "=" (UC03) → 5. Sistema exibe o resultado |
+| **Exceção** | Divisão por zero: sistema exibe "Erro" |
+
+#### UC08 — Aplicar função trigonométrica (número → função)
 
 | Campo | Descrição |
 |-------|-----------|
 | **Ator** | Usuário |
 | **Pré-condição** | Modo Científico ativo; operando válido inserido |
-| **Fluxo principal** | 1. Usuário insere o ângulo → 2. Pressiona sin, cos ou tan → 3. Sistema aplica a função conforme unidade de ângulo ativa (Rad/Grau) → 4. Resultado exibido |
-| **Extensão (2nd)** | UC19 ativa as funções inversas: asin, acos, atan |
+| **Fluxo principal** | 1. Usuário insere o ângulo (UC01) → 2. Pressiona sin, cos ou tan → 3. Sistema aplica a função conforme unidade de ângulo ativa (Rad/Grau) → 4. Resultado exibido |
+| **Extensão (2nd)** | UC19 estende para funções inversas: asin, acos, atan |
 
 ---
 
@@ -89,7 +97,7 @@ O diagrama conceitual abaixo representa as entidades do domínio e seus relacion
 - **Botão**: elemento de entrada do usuário. Cada botão possui um rótulo, uma cor visual e uma ação associada.
 - **Memória**: armazena um valor numérico acessível pelas funções mc/m+/m-/mr.
 - **Resultado**: encapsula o valor calculado e indica se ocorreu algum erro.
-- **Unidade de Ângulo**: contexto necessário para funções trigonométricas, podendo ser Radianos ou Graus.
+- **Modo**: além do tipo Normal/Científico, define o toggle 2nd (`segundaFunçãoAtiva`) e a unidade de ângulo (`unidadeÂngulo`: Radianos ou Graus) quando o modo científico está ativo.
 
 ---
 
