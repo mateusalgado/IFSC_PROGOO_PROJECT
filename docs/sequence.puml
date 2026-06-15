@@ -1,0 +1,98 @@
+@startuml sequence
+
+skinparam backgroundColor #FFFFFF
+skinparam SequenceActorBackgroundColor #F5F5F7
+skinparam SequenceActorBorderColor #FF9F0A
+skinparam SequenceActorFontColor #1C1C1E
+skinparam SequenceParticipantBackgroundColor #F5F5F7
+skinparam SequenceParticipantBorderColor #636366
+skinparam SequenceParticipantFontColor #1C1C1E
+skinparam SequenceArrowColor #FF9F0A
+skinparam SequenceLifeLineBorderColor #636366
+skinparam SequenceGroupBorderColor #FF9F0A
+skinparam SequenceGroupFontColor #FF9F0A
+skinparam NoteBackgroundColor #F5F5F7
+skinparam NoteBorderColor #48484A
+skinparam NoteFontColor #1C1C1E
+
+title Diagrama de Sequência — UC02: Realizar Cálculo Binário (ex.: 7 ÷ 2 = 3.5)
+
+actor "Usuário" as user
+participant "MainWindow" as mw
+participant "StandardPanel" as sp
+participant "CalculatorEngine" as eng
+participant "Division\n(BinaryOperation)" as div
+participant "Display" as disp
+
+== Entrada do primeiro operando ==
+
+user -> sp : pressiona botão "7"
+sp -> mw : buttonClicked("7")
+mw -> eng : inputDigit('7')
+eng --> mw : "7"
+mw -> disp : operator<<("7")
+disp --> user : exibe "7"
+
+== Seleção do operador ==
+
+user -> sp : pressiona botão "÷"
+sp -> mw : buttonClicked("÷")
+mw -> eng : setPendingOperation("÷")
+note right of eng
+  Armazena pendingValue_ = 7.0
+  Armazena referência a Division
+  Reseta buffer de entrada
+end note
+eng --> mw : "7"
+mw -> disp : operator<<("7")
+disp --> user : exibe "7" (expressão: "7 ÷")
+
+== Entrada do segundo operando ==
+
+user -> sp : pressiona botão "2"
+sp -> mw : buttonClicked("2")
+mw -> eng : inputDigit('2')
+eng --> mw : "2"
+mw -> disp : operator<<("2")
+disp --> user : exibe "2"
+
+== Cálculo do resultado ==
+
+user -> sp : pressiona botão "="
+sp -> mw : buttonClicked("=")
+mw -> eng : calculate()
+
+eng -> div : execute(7.0, 2.0)
+note right of div
+  Polimorfismo: método virtual
+  execute() da classe Division
+  retorna 7.0 / 2.0 = 3.5
+end note
+div --> eng : 3.5
+
+eng -> eng : formatResult(3.5)
+eng --> mw : "3.5"
+
+mw -> disp : operator<<("3.5")
+disp --> user : exibe "3.5"
+
+== Caso de Erro: Divisão por Zero ==
+
+user -> sp : pressiona botão "÷"
+sp -> mw : buttonClicked("÷")
+mw -> eng : setPendingOperation("÷")
+
+user -> sp : pressiona botão "0"
+mw -> eng : inputDigit('0')
+
+user -> sp : pressiona botão "="
+mw -> eng : calculate()
+
+eng -> div : execute(resultado_anterior, 0.0)
+div --> eng : throws std::domain_error
+eng -> eng : captura exceção
+eng --> mw : "Erro"
+mw -> disp : operator<<("Erro")
+disp --> user : exibe "Erro"
+
+@enduml

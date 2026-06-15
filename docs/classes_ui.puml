@@ -1,0 +1,96 @@
+@startuml classes_ui
+!pragma layout smetana
+
+skinparam backgroundColor #FFFFFF
+skinparam ClassBackgroundColor #F5F5F7
+skinparam ClassBorderColor #636366
+skinparam ClassFontColor #1C1C1E
+skinparam ClassAttributeFontColor #3A3A3C
+skinparam ClassStereotypeFontColor #FF9F0A
+skinparam ArrowColor #FF9F0A
+skinparam PackageBorderColor #48484A
+skinparam PackageFontColor #FF9F0A
+
+title Diagrama de Classes — UI (Qt6 Widgets)
+
+class CalculatorEngine  <<engine>>
+
+enum ButtonType {
+    DIGIT
+    OPERATOR
+    FUNCTION
+    SPECIAL
+    MEMORY
+}
+
+class CalculatorButton {
+    - label_: QString
+    - actionKey_: QString
+    - type_: ButtonType
+    --
+    + CalculatorButton(label, key, type, parent)
+    + getActionKey() : QString
+    + getType() : ButtonType
+    + setLabel(lbl: QString)
+    + operator==(other: CalculatorButton&) : bool
+}
+
+class CalcDisplay {
+    - mainLabel_: QLabel*
+    - exprLabel_: QLabel*
+    --
+    + CalcDisplay(parent)
+    + setValue(v: QString)
+    + setExpression(expr: QString)
+    + clear()
+    + operator<<(v: QString) : CalcDisplay&
+}
+
+class StandardPanel {
+    # buttons_: std::vector<CalculatorButton*>
+    # layout_: QGridLayout*
+    --
+    + StandardPanel(parent)
+    # {virtual} buildButtons()
+    # connectButtons()
+    ..signals..
+    + buttonClicked(key: QString)
+}
+
+class ScientificPanel {
+    - is2ndActive_: bool
+    - angleUnit_: AngleUnit
+    --
+    + ScientificPanel(parent)
+    + toggle2nd()
+    + setAngleUnit(u: AngleUnit)
+    # buildButtons() override
+    - update2ndLabels()
+}
+
+class MainWindow {
+    - engine_: CalculatorEngine*
+    - display_: CalcDisplay*
+    - stdPanel_: StandardPanel*
+    - sciPanel_: ScientificPanel*
+    - isScientific_: bool
+    --
+    + MainWindow(parent)
+    - setupUi()
+    - applyStyles()
+    - connectSignals()
+    ..slots..
+    - onButtonClicked(key: QString)
+    - toggleScientificMode()
+}
+
+CalculatorButton --> ButtonType
+StandardPanel *-- CalculatorButton
+ScientificPanel --|> StandardPanel
+
+MainWindow *-- CalcDisplay
+MainWindow *-- StandardPanel
+MainWindow *-- ScientificPanel
+MainWindow *-- CalculatorEngine
+
+@enduml

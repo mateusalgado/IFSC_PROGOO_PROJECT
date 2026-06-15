@@ -1,0 +1,278 @@
+@startuml classes
+!pragma layout smetana
+scale 1.5
+
+skinparam backgroundColor #FFFFFF
+skinparam ClassBackgroundColor #F5F5F7
+skinparam ClassBorderColor #636366
+skinparam ClassFontColor #1C1C1E
+skinparam ClassAttributeFontColor #3A3A3C
+skinparam ClassStereotypeFontColor #FF9F0A
+skinparam ArrowColor #FF9F0A
+skinparam PackageBorderColor #48484A
+skinparam PackageFontColor #FF9F0A
+skinparam AbstractClassBackgroundColor #EEEEEF
+skinparam AbstractClassBorderColor #FF9F0A
+skinparam InterfaceBorderColor #30D158
+
+title Diagrama de Classes — Calculadora Científica iPhone
+
+'==================== ENGINE PACKAGE ====================
+package "engine" {
+
+    abstract class Operation {
+        # name_: QString
+        --
+        + {abstract} execute(a: double, b: double) : double
+        + getName() : QString
+    }
+
+    abstract class BinaryOperation {
+        --
+        + {abstract} execute(a: double, b: double) : double
+    }
+
+    abstract class UnaryOperation {
+        --
+        + execute(a: double, b: double = 0) : double
+        + {abstract} apply(x: double) : double
+    }
+
+    class Addition {
+        + execute(a: double, b: double) : double
+    }
+
+    class Subtraction {
+        + execute(a: double, b: double) : double
+    }
+
+    class Multiplication {
+        + execute(a: double, b: double) : double
+    }
+
+    class Division {
+        + execute(a: double, b: double) : double
+        ' throws std::domain_error on b==0
+    }
+
+    class Power {
+        + execute(a: double, b: double) : double
+        ' a^b
+    }
+
+    class NthRoot {
+        + execute(a: double, b: double) : double
+        ' b-th root of a
+    }
+
+    class Trigonometric {
+        - func_: std::function<double(double)>
+        - angleUnit_: AngleUnit*
+        --
+        + Trigonometric(func, angleUnit)
+        + apply(x: double) : double
+    }
+
+    class Logarithmic {
+        - base_: LogBase
+        --
+        + Logarithmic(base: LogBase)
+        + apply(x: double) : double
+    }
+
+    class PowerUnary {
+        - exponent_: double
+        --
+        + PowerUnary(exp: double)
+        + apply(x: double) : double
+        ' x^exp (ex.: x², x³, eˣ, 10ˣ)
+    }
+
+    class RootUnary {
+        - degree_: double
+        --
+        + RootUnary(degree: double)
+        + apply(x: double) : double
+        ' degree-th root of x
+    }
+
+    class Factorial {
+        + apply(x: double) : double
+    }
+
+    class Inverse {
+        + apply(x: double) : double
+        ' 1/x
+    }
+
+    enum AngleUnit {
+        RADIANS
+        DEGREES
+    }
+
+    enum LogBase {
+        NATURAL
+        TEN
+    }
+
+    class Memory {
+        - value_: double
+        --
+        + store(v: double)
+        + add(v: double)
+        + subtract(v: double)
+        + recall() : double
+        + clear()
+        + hasValue() : bool
+        + operator+(v: double) : Memory&
+        + operator-(v: double) : Memory&
+    }
+
+    class CalculatorEngine {
+        - currentValue_: double
+        - pendingValue_: double
+        - pendingOp_: Operation*
+        - memory_: Memory
+        - angleUnit_: AngleUnit
+        - is2ndActive_: bool
+        - expressionStack_: std::stack<double>
+        - ops_: std::map<QString, Operation*>
+        - history_: std::vector<double>
+        --
+        + CalculatorEngine()
+        + ~CalculatorEngine()
+        + inputDigit(digit: char) : QString
+        + inputDecimal() : QString
+        + setPendingOperation(opName: QString) : QString
+        + calculate() : QString
+        + applyUnary(opName: QString) : QString
+        + clear() : QString
+        + clearEntry() : QString
+        + toggleSign() : QString
+        + percentage() : QString
+        + memoryStore()
+        + memoryAdd()
+        + memorySubtract()
+        + memoryRecall() : QString
+        + memoryClear()
+        + setAngleUnit(u: AngleUnit)
+        + toggle2nd()
+        + insertConstant(name: QString) : QString
+        + randomNumber() : QString
+        + currentDisplay() : QString
+        + currentExpression() : QString
+        - formatResult(v: double) : QString
+        - registerOps()
+    }
+
+    Operation <|-- BinaryOperation
+    Operation <|-- UnaryOperation
+
+    BinaryOperation <|-- Addition
+    BinaryOperation <|-- Subtraction
+    BinaryOperation <|-- Multiplication
+    BinaryOperation <|-- Division
+    BinaryOperation <|-- Power
+    BinaryOperation <|-- NthRoot
+
+    UnaryOperation <|-- Trigonometric
+    UnaryOperation <|-- Logarithmic
+    UnaryOperation <|-- PowerUnary
+    UnaryOperation <|-- RootUnary
+    UnaryOperation <|-- Factorial
+    UnaryOperation <|-- Inverse
+
+    Trigonometric --> AngleUnit
+    Logarithmic --> LogBase
+
+    CalculatorEngine "1" *-- "1" Memory
+    CalculatorEngine "1" o-- "many" Operation : ops_
+    CalculatorEngine --> AngleUnit
+}
+
+'==================== UI PACKAGE ====================
+package "ui" {
+
+    class CalculatorButton {
+        - label_: QString
+        - actionKey_: QString
+        - buttonType_: ButtonType
+        --
+        + CalculatorButton(label, key, type, parent)
+        + getActionKey() : QString
+        + setLabel(lbl: QString)
+        + operator==(other: CalculatorButton&) : bool
+    }
+
+    enum ButtonType {
+        DIGIT
+        OPERATOR
+        FUNCTION
+        SPECIAL
+        MEMORY
+    }
+
+    class Display {
+        - mainLabel_: QLabel*
+        - exprLabel_: QLabel*
+        --
+        + Display(parent)
+        + setValue(v: QString)
+        + setExpression(e: QString)
+        + clear()
+        + operator<<(v: QString) : Display&
+    }
+
+    class StandardPanel {
+        # buttons_: std::vector<CalculatorButton*>
+        # layout_: QGridLayout*
+        --
+        + StandardPanel(parent)
+        + {virtual} ~StandardPanel()
+        # {virtual} buildButtons()
+        # connectButtons()
+        + buttonClicked(key: QString) [signal]
+    }
+
+    class ScientificPanel {
+        - is2ndActive_: bool
+        --
+        + ScientificPanel(parent)
+        # buildButtons() override
+        + toggle2nd()
+        + setAngleUnit(u: AngleUnit)
+        - update2ndLabels()
+    }
+
+    class MainWindow {
+        - engine_: CalculatorEngine*
+        - display_: Display*
+        - stdPanel_: StandardPanel*
+        - sciPanel_: ScientificPanel*
+        - toggleBtn_: QPushButton*
+        - animation_: QPropertyAnimation*
+        - isScientific_: bool
+        --
+        + MainWindow(parent)
+        + ~MainWindow()
+        - setupUi()
+        - applyStyles()
+        - connectSignals()
+        - onButtonClicked(key: QString)
+        - toggleScientificMode()
+        - updateDisplay(result: QString)
+    }
+
+    CalculatorButton --> ButtonType
+    StandardPanel "1" *-- "many" CalculatorButton
+    ScientificPanel --|> StandardPanel
+    MainWindow "1" *-- "1" Display
+    MainWindow "1" *-- "1" StandardPanel
+    MainWindow "1" *-- "1" ScientificPanel
+}
+
+'==================== CROSS-PACKAGE ====================
+MainWindow "1" *-- "1" CalculatorEngine
+MainWindow ..> AngleUnit
+
+@enduml

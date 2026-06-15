@@ -1,0 +1,165 @@
+@startuml classes_engine
+!pragma layout smetana
+
+skinparam backgroundColor #FFFFFF
+skinparam ClassBackgroundColor #F5F5F7
+skinparam ClassBorderColor #636366
+skinparam ClassFontColor #1C1C1E
+skinparam ClassAttributeFontColor #3A3A3C
+skinparam ClassStereotypeFontColor #FF9F0A
+skinparam ArrowColor #FF9F0A
+skinparam PackageBorderColor #48484A
+skinparam PackageFontColor #FF9F0A
+
+title Diagrama de Classes — Engine (lógica de cálculo)
+
+abstract class Operation {
+    # name_: QString
+    --
+    + {abstract} execute(a: double, b: double) : double
+    + getName() : QString
+}
+
+abstract class BinaryOperation {
+    + {abstract} execute(a: double, b: double) : double
+}
+
+abstract class UnaryOperation {
+    + execute(a: double, b: double) : double
+    + {abstract} apply(x: double) : double
+}
+
+class Addition {
+    + execute(a: double, b: double) : double
+}
+class Subtraction {
+    + execute(a: double, b: double) : double
+}
+class Multiplication {
+    + execute(a: double, b: double) : double
+}
+class Division {
+    + execute(a: double, b: double) : double
+}
+class Power {
+    + execute(a: double, b: double) : double
+}
+class NthRoot {
+    + execute(a: double, b: double) : double
+}
+
+class Trigonometric {
+    - func_: std::function<double(double)>
+    - angleUnit_: AngleUnit*
+    - isInverse_: bool
+    --
+    + apply(x: double) : double
+}
+
+class Logarithmic {
+    - base_: LogBase
+    --
+    + apply(x: double) : double
+}
+
+class PowerUnary {
+    - exponent_: double
+    --
+    + apply(x: double) : double
+}
+
+class Exponential {
+    + apply(x: double) : double
+}
+class TenPower {
+    + apply(x: double) : double
+}
+
+class RootUnary {
+    - degree_: double
+    --
+    + apply(x: double) : double
+}
+
+class Factorial {
+    + apply(x: double) : double
+}
+class Inverse {
+    + apply(x: double) : double
+}
+
+enum AngleUnit {
+    RADIANS
+    DEGREES
+}
+enum LogBase {
+    NATURAL
+    TEN
+}
+
+class Memory {
+    - value_: double
+    - hasValue_: bool
+    --
+    + store(v: double)
+    + clear()
+    + recall() : double
+    + hasValue() : bool
+    + operator+=(v: double) : Memory&
+    + operator-=(v: double) : Memory&
+}
+
+class CalculatorEngine {
+    - currentValue_: double
+    - pendingValue_: double
+    - pendingOp_: Operation*
+    - memory_: Memory
+    - angleUnit_: AngleUnit
+    - is2ndActive_: bool
+    - ops_: std::map<QString, Operation*>
+    --
+    + inputDigit(d: QChar) : QString
+    + inputDecimal() : QString
+    + setPendingOperation(op: QString) : QString
+    + calculate() : QString
+    + applyUnary(op: QString) : QString
+    + clear() : QString
+    + toggleSign() : QString
+    + percentage() : QString
+    + memoryStore() / memoryAdd() / memorySubtract()
+    + memoryRecall() : QString / memoryClear()
+    + setAngleUnit(u: AngleUnit)
+    + toggle2nd()
+    + insertConstant(name: QString) : QString
+    + randomNumber() : QString
+    - registerOps()
+    - formatResult(v: double) : QString
+}
+
+Operation <|-- BinaryOperation
+Operation <|-- UnaryOperation
+
+BinaryOperation <|-- Addition
+BinaryOperation <|-- Subtraction
+BinaryOperation <|-- Multiplication
+BinaryOperation <|-- Division
+BinaryOperation <|-- Power
+BinaryOperation <|-- NthRoot
+
+UnaryOperation <|-- Trigonometric
+UnaryOperation <|-- Logarithmic
+UnaryOperation <|-- PowerUnary
+UnaryOperation <|-- Exponential
+UnaryOperation <|-- TenPower
+UnaryOperation <|-- RootUnary
+UnaryOperation <|-- Factorial
+UnaryOperation <|-- Inverse
+
+Trigonometric --> AngleUnit
+Logarithmic   --> LogBase
+
+CalculatorEngine *-- Memory
+CalculatorEngine o-- Operation : ops_
+CalculatorEngine --> AngleUnit
+
+@enduml
