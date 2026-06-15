@@ -1,0 +1,103 @@
+@startuml domain
+!pragma layout smetana
+
+skinparam backgroundColor #FFFFFF
+skinparam ClassBackgroundColor #F5F5F7
+skinparam ClassBorderColor #636366
+skinparam ClassFontColor #1C1C1E
+skinparam ClassAttributeFontColor #3A3A3C
+skinparam ArrowColor #FF9F0A
+skinparam PackageBorderColor #48484A
+skinparam PackageFontColor #FF9F0A
+skinparam NoteBackgroundColor #F5F5F7
+skinparam NoteBorderColor #48484A
+skinparam NoteFontColor #1C1C1E
+
+title Diagrama de Domínio — Calculadora Científica iPhone
+
+package "Interface" {
+    class Display {
+        valorExibido: Texto
+        expressãoAtual: Texto
+    }
+
+    class Botão {
+        rótulo: Texto
+        cor: TipoCor
+        ação: TipoAção
+    }
+}
+
+package "Cálculo" {
+    class Operação {
+        tipo: TipoOperação
+        arity: {unária, binária}
+    }
+
+    class OperaçãoBinária {
+        operandoEsquerdo: Número
+        operandoDireito: Número
+    }
+
+    class OperaçãoUnária {
+        operando: Número
+    }
+
+    class Resultado {
+        valor: Número
+        erro: {nenhum, divisãoPorZero, domínioInválido}
+    }
+
+    Operação <|-- OperaçãoBinária
+    Operação <|-- OperaçãoUnária
+}
+
+package "Configuração" {
+    class Modo {
+        tipo: {Normal, Científico}
+        segundaFunçãoAtiva: Boolean
+    }
+
+    class ÂnguloUnidade {
+        unidade: {Radianos, Graus}
+    }
+
+    class Memória {
+        valor: Número
+    }
+}
+
+class Calculadora {
+}
+
+Calculadora "1" *-- "1" Display : possui
+Calculadora "1" *-- "1" Memória : possui
+Calculadora "1" *-- "1" Modo : opera em
+Calculadora "1" *-- "many" Botão : possui
+Calculadora "1" -- "many" Operação : executa
+
+Modo "1" *-- "0..1" ÂnguloUnidade : define
+
+Operação "1" -- "0..1" Resultado : produz
+Display "1" -- "0..1" Resultado : apresenta
+Botão "1" ..> "1" Operação : dispara
+OperaçãoUnária ..> ÂnguloUnidade : consulta (trigonométrica)
+
+note right of Calculadora
+  Entidade central do domínio.
+  Recebe entradas via Botões,
+  executa Operações conforme Modo
+  e exibe Resultado no Display.
+end note
+
+note bottom of Modo
+  segundaFunçãoAtiva corresponde
+  ao toggle 2nd (RF14)
+end note
+
+note bottom of ÂnguloUnidade
+  Definido pelo Modo quando
+  tipo = Científico (RF13)
+end note
+
+@enduml
