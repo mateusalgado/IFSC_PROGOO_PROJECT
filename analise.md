@@ -52,7 +52,7 @@ O diagrama abaixo identifica o único ator do sistema (**Usuário**) e todas as 
 
 ### Descrição dos Casos de Uso Principais
 
-#### UC02 — Cálculo binário: número → operação → número
+#### UC01 — Cálculo binário: número → operação → número
 
 | Campo | Descrição |
 |-------|-----------|
@@ -61,7 +61,7 @@ O diagrama abaixo identifica o único ator do sistema (**Usuário**) e todas as 
 | **Fluxo principal** | 1. Usuário insere o primeiro operando (UC01) → 2. Pressiona operador (+, -, ×, ÷) → 3. Insere o segundo operando (UC01) → 4. Pressiona "=" (UC03) → 5. Sistema exibe o resultado |
 | **Exceção** | Divisão por zero: sistema exibe "Erro" |
 
-#### UC02b — Cálculo binário: operação → número
+#### UC02 — Cálculo binário: operação → número
 
 | Campo | Descrição |
 |-------|-----------|
@@ -70,7 +70,7 @@ O diagrama abaixo identifica o único ator do sistema (**Usuário**) e todas as 
 | **Fluxo principal** | 1. Usuário pressiona operador (+, -, ×, ÷) → 2. Sistema usa o valor do display como 1º operando → 3. Usuário insere o segundo operando (UC01) → 4. Pressiona "=" (UC03) → 5. Sistema exibe o resultado |
 | **Exceção** | Divisão por zero: sistema exibe "Erro" |
 
-#### UC08 — Aplicar função trigonométrica (número → função)
+#### UC03 — Aplicar função trigonométrica (número → função)
 
 | Campo | Descrição |
 |-------|-----------|
