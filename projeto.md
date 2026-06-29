@@ -75,7 +75,7 @@ Internamente usa `std::map<QString, Operation*>` inicializado no construtor via 
 
 ---
 
-## Diagrama de Sequência — UC01: Realizar Cálculo Binário
+## Diagrama de Sequência — UC02: Realizar Cálculo Binário
 
 O diagrama abaixo mostra o fluxo completo para a operação **7 ÷ 2 = 3.5**, incluindo o tratamento do caso de erro (divisão por zero).
 
